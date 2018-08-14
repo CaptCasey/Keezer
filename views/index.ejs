@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Brew Shack Keezer</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--Site CSS-->
+<link rel="stylesheet" href="/CSS/keezer.css">
+<script src="/jquery/jquery.js"></script>
+
+
+</head>
+<body>
+
+
+<table align=center width=1275 cellpadding=0 cellspacing=0 border=0>
+  <tr>
+    <td width=30 class= 'ui-helper-size18'>TAP</td>
+    <td colspan=5 width=470 class= 'ui-helper-size18'>NAME</td>
+    <td width=300 class= 'ui-helper-size18'>STYLE</td>
+    <td width=120 class= 'ui-helper-size18'>BREWERY</td>
+    <td width=150 class= 'ui-helper-size18'>HOPS</td>
+    <td width=100 class= 'ui-helper-size18'>COLOR</td>
+    <td width=100 class= 'ui-helper-size18'>STATUS</td>
+  </tr>
+  <tr>
+    <td colspan=11><hr></td>
+  </tr>
+
+	<% for (var i = 0; i < 5; i++) { 
+		var ABV = ((data[i].OG - data[i].FG)*131).toFixed(1); 
+		var pints = data[i].Volume*8;
+		var KegPercent = pints/pints*100;
+		var SRM = parseInt(data[i].SRM);
+		if (KegPercent > 75 && KegPercent <= 100){
+			var KegImage = "images/keg100.png";
+		}
+		if (KegPercent > 50 && KegPercent <= 75){
+			var KegImage = "images/keg75.png";
+		}
+		if (KegPercent > 25 && KegPercent <= 50){
+			var KegImage = "images/keg50.png";
+		}
+		if (KegPercent > 0 && KegPercent <= 25){
+			var KegImage = "images/keg25.png";
+		}
+		if (KegPercent <= 0){
+			var KegImage = "images/keg0.png";
+		}
+		if (SRM > 50 && SRM <= 100){
+			var SRM = 50;
+		}
+	%>
+
+	<tr>
+		<td rowspan=3 class= 'ui-helper-size18'><%- data[i].TapNumber %></td>
+		<td colspan=5 height=80 class= 'ui-helper-size26'><%- data[i].BeerName %></td>
+		<td rowspan=3 class= 'ui-helper-size18'><%- data[i].BJCPstyle %></td>
+		<td rowspan=3 class= 'ui-helper-size18'><img id='Logo<%- data[i].TapNumber %>' src='images/logo.png'height='80' /></td>
+		<td rowspan=3><img id='Hops<%- data[i].TapNumber %>' src='images/<%- data[i].Hops %>hop.png' height='80' /></td>
+		<td rowspan=3><img id='SRM<%- data[i].TapNumber %>' src='images/SRM<%- SRM %>.png' height='80' /></td>
+		<td rowspan=3><img id='Pints<%- data[i].TapNumber %>' src='<%- KegImage  %>' height='80' /></td>
+	</tr>
+	<tr>
+		<td height=10>ABV - <%- ABV %></td>
+		<td>OG - <%- data[i].OG %></td>
+		<td>FG -<%- data[i].FG %></td>
+		<td>IBU -<%- data[i].IBU %></td>
+		<td>SRM -<%- data[i].SRM %></td>
+	</tr>
+	<tr>
+		<td colspan=2 height=10>BREWED - <%- data[i].BrewDate %></td>
+		<td colspan='2' height=10>KEGGED - <%- data[i].KegDate %></td>
+		<td>PINTS REMAINING - <%- pints %></td>
+	</tr>
+	<tr>
+		<td colspan=11><hr></td>
+	</tr>
+	<% } %>
+
+</table>
+
+</body>
+</html>

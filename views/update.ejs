@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Keezer Control</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--Site CSS-->
+<link rel="stylesheet" href="/CSS/keezer.css">
+<script src="/jquery/jquery.js"></script>
+
+<script>
+
+
+//Add options to the Style Selector
+$( document ).ready(function() {
+    var data = <%- JSON.stringify(data) %>;
+    var beers = data[0].beers;
+    var i;
+    var mySelect = $('#mySelect');
+    $('#BJCPstyle').append($('<option>', {value: "Empty", text: "Empty"}));
+    for (i = 0; i < beers.length; ++i) {
+        $('#BJCPstyle').append($('<option>', {value: beers[i].number.toString() +" - "+ beers[i].name, text: beers[i].number.toString() +" - "+ beers[i].name}));
+        var subcategories = beers[i].subcategories
+        var j;
+        for (j = 0; j < subcategories.length; ++j) {
+            var selectorText = beers[i].number.toString()+subcategories[j].letter+" - "+ subcategories[j].name
+
+            $('#BJCPstyle').append($('<option>', {value: selectorText, text: selectorText}));
+        }
+    }
+});
+
+//Send the form
+function UpdateSQLajax() {
+    var TapNumber = $('#TapNumber').val();
+    var BeerName = $('#BeerName').val();
+    var BJCPstyle = $("#BJCPstyle option:selected").text();
+    var IBU = $('#IBU').val();
+    var Hops = $('#Hops').val();
+    var SRM = $('#SRM').val();
+    var Volume = $('#Volume').val();
+    var OG = $('#OG').val();
+    var FG = $('#FG').val();
+    var BrewDate = $('#BrewDate').val();
+    var KegDate = $('#KegDate').val();
+    $.post(
+        "/tapUpdate",
+        {TapNumber: TapNumber,  BeerName: BeerName, BJCPstyle: BJCPstyle, IBU: IBU, Hops: Hops, SRM: SRM, Volume: Volume, OG: OG, FG: FG, BrewDate: BrewDate, KegDate: KegDate},
+        function(data, status) {
+            alert("Tap " + TapNumber + " update was " + status + "ful!");
+        }
+    ); 
+}
+
+//Reset the form
+function Reset() {
+    window.location.reload();
+}
+
+//Home Redirect the form
+function Home() {
+    window.location.assign("/");
+}
+
+//Light Toggle
+function lightToggle(Status){
+  if (Status =="On"){
+    document.getElementById("keezerLightButton").value = "Off";
+    console.log("You Just Turned The Keezer Light Off");
+    console.log(Status);
+    $.post("/lightOn", function(data, status) { alert("You Just Turned The Keezer Light Off");}); 
+  }
+  if (Status =="Off"){
+    document.getElementById("keezerLightButton").value = "On";
+    console.log("You Just Turned The Keezer Light On");
+    console.log(Status);
+    $.post("/lightOff", function(data, status) { alert("You Just Turned The Keezer Light On");});
+  }
+}
+
+
+
+
+
+
+//Home Redirect the form
+function tempSet(temp) {
+    console.log("tempSet " + temp);
+}
+
+</script>
+</head>
+<body>
+
+
+
+
+
+
+<table align=center width="100%" border="0">
+    <tr>
+        <td colspan="8"><img src="/images/logo.png" width="200" /></td>
+    </tr>
+    <tr>
+        <td colspan="8" height="60" class= "ui-helper-size26">THE BREW SHACK CRAFT BEER KEGERATOR</td>
+    <tr>
+        <td colspan="8" height="40" class= "ui-helper-size18">
+        UPDATE TAP
+        <select id="TapNumber">
+			<% for (var i = 1; i <= 5; i++) { %>
+		    	<option><%= i %></option>
+			<% } %>
+        </select>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">NAME</td>
+        <td width="361" colspan="2">STYLE</td>
+        <td width="97">IBU</td>
+        <td width="100">HOP CHARACTER</td>
+        <td width="95">SRM</td>
+        <td width="95">VOLUME</td>
+    </tr>
+    <tr>
+        <td height="33" colspan="2">
+            <label for="textfield"></label><textarea  cols="75" id="BeerName"></textarea>
+        </td>
+        <td  class= "ui-helper-top" colspan="2">
+            <select id='BJCPstyle'>";
+			</select>
+        </td>
+        <td class= "ui-helper-top">
+            <select id="IBU">
+	            <% for (var i = 0; i <= 200; i++) { %>
+		    		<option><%= i %></option>
+				<% } %>
+            </select>
+        </td>
+        <td class= "ui-helper-top">
+            <select id="Hops">
+	            <% for (var i = 0; i <= 3; i++) { %>
+		    		<option><%= i %></option>
+				<% } %>
+            </select>
+        </td>
+        <td class= "ui-helper-top">
+            <select id="SRM">
+            	<% for (var i = 1; i <= 100; i++) { %>
+		    		<option><%= i %></option>
+				<% } %>
+            <option value='101'>Pink</option>
+            <option value='102'>Purple</option>
+            <option value='103'>Blue</option>
+            </select>
+        </td>
+        <td class= "ui-helper-top">
+            <select id="Volume">
+            	<%for (var i = 0; i <= 15; i = i+.5) { %>
+			    	<option><%= i.toFixed(1) %></option>
+				<% } %>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td width="359">ORIGINAL GRAVITY</td>
+        <td width="359">FINAL GRAVITY</td>
+        <td>Brew Date</td>
+        <td>Keg Date</td>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <select id="OG">
+	            <%for (var i = 0.990; i <= 1.120; i = i+.001) { %>
+			    	<option><%= i.toFixed(3) %></option>
+				<% } %>
+            </select>
+        </td>
+        <td>
+            <select id="FG">
+            	<%for (var i = 0.990; i <= 1.120; i = i+.001) { %>
+			    	<option><%= i.toFixed(3) %></option>
+				<% } %>
+            </select>
+        </td>
+        <td>
+            <input id="BrewDate" type="date">
+        </td>
+        <td> 
+            <input id="KegDate" type="date">
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="8" height="60">
+            <p></p>
+            <input type="button" value="Submit" onclick="UpdateSQLajax()"/><input type="button" value="Reset" onclick="Reset()"/><input type="button" value="Back To Keezer Main" onclick="Home()"/>
+        </td>
+    </tr>
+    <p>
+    <table align=center width="100%" border="0">
+        <tr>
+            <td>
+                Update Keezer Temperature: 
+                <select id="" onchange="tempSet(this.value)">
+                    <% for (var i = 30; i <= 60; i++) { %>
+                        <option><%= i %></option>
+                    <% } %>
+                </select>
+            </td>
+        </tr>
+    </table>
+        <tr>
+            <td>
+                Keezer Light: 
+                <td><input id="keezerLightButton" type="Button" value="On" onclick="lightToggle(this.value)"/></td>
+            </td>
+        </tr>
+    </table> 
+    </p>
+</table>
+</body>
+</html>
